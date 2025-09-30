@@ -54,11 +54,6 @@
       "REACT_APP_CLOUD_NAME_CLOUDINARY": "@react_app_cloud_name_cloudinary"
     }
   },
-  "functions": {
-    "frontend/package.json": {
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/static/(.*)",
