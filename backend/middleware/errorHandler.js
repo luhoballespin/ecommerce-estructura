@@ -3,7 +3,7 @@
  * Captura, registra y responde errores de manera consistente
  */
 
-const logger = require('./logger');
+const { logger } = require('./logger');
 
 /**
  * Clase personalizada para errores de la aplicación
@@ -42,7 +42,7 @@ const handleValidationError = (error) => {
 const handleDuplicateFieldsError = (error) => {
     const field = Object.keys(error.keyValue)[0];
     const value = error.keyValue[field];
-    
+
     return new AppError(
         `El campo '${field}' con valor '${value}' ya existe`,
         409,
@@ -178,7 +178,7 @@ const handleMulterError = (err, req, res, next) => {
             'FILE_TOO_LARGE'
         ));
     }
-    
+
     if (err.code === 'LIMIT_FILE_COUNT') {
         return next(new AppError(
             'Demasiados archivos. Máximo permitido: 5 archivos',
@@ -186,7 +186,7 @@ const handleMulterError = (err, req, res, next) => {
             'TOO_MANY_FILES'
         ));
     }
-    
+
     next(err);
 };
 
