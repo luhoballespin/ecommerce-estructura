@@ -13,23 +13,23 @@ const passport = require("./config/passport");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 const { requestLogger } = require("./middleware/logger");
 const { generalLimiter } = require("./middleware/rateLimiter");
+const { cors: customCors } = require("./middleware/cors");
+const {
+    securityHeaders,
+    sanitizeHeaders,
+    preventInjection,
+    validatePayloadSize
+} = require("./middleware/security");
 
 const app = express();
 
-// Configuración de seguridad
-app.use(helmet({
-    crossOriginEmbedderPolicy: false,
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
-            scriptSrc: ["'self'"],
-            connectSrc: ["'self'"]
-        }
-    }
-}));
+// Configuración de seguridad mejorada
+app.use(securityHeaders);
+
+// Middlewares de seguridad adicionales
+app.use(sanitizeHeaders);
+app.use(preventInjection);
+app.use(validatePayloadSize());
 
 // Compresión de respuestas
 app.use(compression());
@@ -37,29 +37,8 @@ app.use(compression());
 // Rate limiting
 app.use(generalLimiter);
 
-// CORS configuration
-const corsOptions = {
-    origin: function (origin, callback) {
-        const allowedOrigins = [
-            process.env.FRONTEND_URL || "http://localhost:3000",
-            "http://localhost:3000",
-            "http://127.0.0.1:3000"
-        ];
-
-        // Permitir requests sin origin (como aplicaciones móviles)
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('No permitido por CORS'));
-        }
-    },
-    credentials: true,
-    optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+// CORS configuration mejorada
+app.use(customCors);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -111,15 +90,49 @@ const PORT = process.env.PORT || 8080;
 const startServer = async () => {
     try {
         await connectDB();
-        app.listen(PORT, () => {
+
+        const server = app.listen(PORT, process.env.HOST || '0.0.0.0', () => {
             console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
             console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
             console.log(`📊 Health check: http://localhost:${PORT}/health`);
+
+            // Log de configuración para debugging
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔧 Configuración de desarrollo activada');
+                console.log(`📡 CORS permitido para: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+            }
         });
+
+        // Manejo graceful de cierre del servidor
+        process.on('SIGTERM', () => {
+            console.log('🛑 SIGTERM recibido, cerrando servidor gracefully...');
+            server.close(() => {
+                console.log('✅ Servidor cerrado correctamente');
+                process.exit(0);
+            });
+        });
+
+        process.on('SIGINT', () => {
+            console.log('🛑 SIGINT recibido, cerrando servidor gracefully...');
+            server.close(() => {
+                console.log('✅ Servidor cerrado correctamente');
+                process.exit(0);
+            });
+        });
+
     } catch (error) {
         console.error('❌ Error al iniciar el servidor:', error);
         process.exit(1);
     }
 };
+
+// Verificar variables de entorno críticas antes de iniciar
+const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET', 'TOKEN_SECRET_KEY'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+    console.error('❌ Variables de entorno faltantes:', missingEnvVars.join(', '));
+    process.exit(1);
+}
 
 startServer();

@@ -1,0 +1,53 @@
+services:
+  # Backend API
+  - type: web
+    name: ecommerce-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        fromDatabase:
+          name: ecommerce-mongodb
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TOKEN_SECRET_KEY
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://tu-dominio-frontend.vercel.app
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: EMAIL_FROM_EMAIL
+        value: noreply@tu-dominio.com
+      - key: EMAIL_FROM_NAME
+        value: Mi Tienda Online
+      - key: APP_NAME
+        value: Mi Tienda Online
+      - key: ADMIN_EMAIL
+        value: admin@tu-dominio.com
+      - key: LOG_LEVEL
+        value: warn
+    healthCheckPath: /health
+    autoDeploy: true
+    branch: main
+
+databases:
+  # MongoDB
+  - name: ecommerce-mongodb
+    plan: free
+    databaseName: ecommerce
+    user: ecommerce-user
