@@ -61,49 +61,53 @@ passport.use(new JwtStrategy({
   }
 }));
 
-// Estrategia Google OAuth
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || "/api/auth/google/callback"
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    // Verificar si el usuario ya existe
-    let user = await userModel.findOne({
-      $or: [
-        { email: profile.emails[0].value },
-        { googleId: profile.id }
-      ]
-    });
+// Estrategia Google OAuth (solo si las credenciales están configuradas)
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "/api/auth/google/callback"
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Verificar si el usuario ya existe
+      let user = await userModel.findOne({
+        $or: [
+          { email: profile.emails[0].value },
+          { googleId: profile.id }
+        ]
+      });
 
-    if (user) {
-      // Si el usuario existe pero no tiene googleId, agregarlo
-      if (!user.googleId) {
-        user.googleId = profile.id;
-        await user.save();
+      if (user) {
+        // Si el usuario existe pero no tiene googleId, agregarlo
+        if (!user.googleId) {
+          user.googleId = profile.id;
+          await user.save();
+        }
+        return done(null, user);
       }
-      return done(null, user);
+
+      // Crear nuevo usuario
+      const newUser = new userModel({
+        googleId: profile.id,
+        name: profile.displayName,
+        email: profile.emails[0].value,
+        profilePic: profile.photos[0].value,
+        isActive: true,
+        role: 'user',
+        provider: 'google',
+        emailVerified: true
+      });
+
+      const savedUser = await newUser.save();
+      return done(null, savedUser);
+
+    } catch (error) {
+      return done(error, null);
     }
-
-    // Crear nuevo usuario
-    const newUser = new userModel({
-      googleId: profile.id,
-      name: profile.displayName,
-      email: profile.emails[0].value,
-      profilePic: profile.photos[0].value,
-      isActive: true,
-      role: 'user',
-      provider: 'google',
-      emailVerified: true
-    });
-
-    const savedUser = await newUser.save();
-    return done(null, savedUser);
-
-  } catch (error) {
-    return done(error, null);
-  }
-}));
+  }));
+} else {
+  console.log('⚠️  Google OAuth no configurado - faltan GOOGLE_CLIENT_ID o GOOGLE_CLIENT_SECRET');
+}
 
 // Serialización de usuario para sesiones
 passport.serializeUser((user, done) => {
