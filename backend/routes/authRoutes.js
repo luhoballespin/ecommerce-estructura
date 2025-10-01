@@ -18,6 +18,7 @@ const userLogoutController = require('../controller/user/userLogout');
 
 // Middleware de autenticación
 const authToken = require('../middleware/authToken');
+const authTokenOptional = require('../middleware/authTokenOptional');
 
 // ==================== RUTAS DE AUTENTICACIÓN ====================
 
@@ -70,7 +71,7 @@ router.post('/register', userSignUpController);
  * @desc    Cerrar sesión
  * @access  Private
  */
-router.post('/logout', authToken, userLogoutController);
+router.post('/logout', authTokenOptional, userLogoutController);
 
 /**
  * @route   GET /api/auth/me

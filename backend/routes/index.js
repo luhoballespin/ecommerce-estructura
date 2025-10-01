@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Middleware de autenticación y autorización
 const authToken = require('../middleware/authToken');
+const authTokenOptional = require('../middleware/authTokenOptional');
 const { requireRole, requirePermission } = require('../middleware/authorize');
 const { validate, validateObjectId } = require('../middleware/validation');
 const { authLimiter, signupLimiter } = require('../middleware/rateLimiter');
@@ -49,7 +50,7 @@ router.post("/signin",
 );
 
 // Cerrar sesión
-router.get("/userLogout", authToken, userLogout);
+router.get("/userLogout", authTokenOptional, userLogout);
 
 // ==================== RUTAS DE USUARIO ====================
 
