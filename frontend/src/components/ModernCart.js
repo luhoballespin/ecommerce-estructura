@@ -98,7 +98,6 @@ const ModernCart = () => {
 
       const response = await fetch(SummaryApi.addToCartProductView.url, {
         method: SummaryApi.addToCartProductView.method,
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

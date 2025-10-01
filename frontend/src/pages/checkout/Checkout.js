@@ -75,11 +75,13 @@ const Checkout = () => {
   const fetchCartItems = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem('token');
+
       const response = await fetch(SummaryApi.addToCartProductView.url, {
         method: SummaryApi.addToCartProductView.method,
-        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
       });
 
