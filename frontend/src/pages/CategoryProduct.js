@@ -23,27 +23,41 @@ const CategoryProduct = () => {
   const [selectCategory, setSelectCategory] = useState(urlCategoryListObject);
   const [filterCategoryList, setFilterCategoryList] = useState([]);
 
-  // Fetch de productos por categoría
+  // Fetch de productos por categoría o todos los productos
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(SummaryApi.filterProduct.url, {
-          method: SummaryApi.filterProduct.method,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            category: filterCategoryList,
-          }),
-        });
-        const dataResponse = await response.json();
-        if (dataResponse?.success && Array.isArray(dataResponse?.data)) {
-          setData(dataResponse.data);
+
+        // Si hay categorías seleccionadas, usar filtro
+        if (filterCategoryList.length > 0) {
+          const response = await fetch(SummaryApi.filterProduct.url, {
+            method: SummaryApi.filterProduct.method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              category: filterCategoryList,
+            }),
+          });
+          const dataResponse = await response.json();
+          if (dataResponse?.success && Array.isArray(dataResponse?.data)) {
+            setData(dataResponse.data);
+          } else {
+            setData([]);
+          }
         } else {
-          setData([]);
+          // Si no hay categorías seleccionadas, mostrar todos los productos
+          const response = await fetch(SummaryApi.allProduct.url);
+          const dataResponse = await response.json();
+          if (dataResponse?.success && Array.isArray(dataResponse?.data)) {
+            setData(dataResponse.data);
+          } else {
+            setData([]);
+          }
         }
       } catch (error) {
+        console.error('Error fetching products:', error);
         setData([]);
       } finally {
         setLoading(false);
@@ -151,7 +165,9 @@ const CategoryProduct = () => {
         {/* Productos */}
         <div className="px-4">
           <p className="font-medium text-slate-800 text-lg my-2">
-            Search Results: {data.length}
+            {filterCategoryList.length > 0
+              ? `Resultados de búsqueda: ${data.length}`
+              : `Todos los productos: ${data.length}`}
           </p>
 
           <div className="min-h-[calc(100vh-120px)] overflow-y-scroll max-h-[calc(100vh-120px)]">
