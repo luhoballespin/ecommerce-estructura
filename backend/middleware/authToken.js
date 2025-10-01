@@ -7,10 +7,21 @@ const userModel = require('../models/userModel');
  */
 async function authToken(req, res, next) {
     try {
+        // Log para debugging
+        console.log('🔍 Auth Debug:', {
+            url: req.url,
+            cookies: req.cookies,
+            authHeader: req.headers.authorization,
+            userAgent: req.headers['user-agent']?.substring(0, 50)
+        });
+
         // Obtener token de cookies o headers
         const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
-        
+
+        console.log('🔍 Token found:', token ? 'YES' : 'NO', token ? `(${token.length} chars)` : '');
+
         if (!token) {
+            console.log('❌ No token found - returning 401');
             return res.status(401).json({
                 message: "Token de acceso requerido",
                 error: true,
@@ -23,7 +34,9 @@ async function authToken(req, res, next) {
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
+            console.log('✅ Token válido para usuario:', decoded._id);
         } catch (jwtError) {
+            console.log('❌ Token inválido:', jwtError.message);
             return res.status(401).json({
                 message: "Token inválido o expirado",
                 error: true,
@@ -34,7 +47,7 @@ async function authToken(req, res, next) {
 
         // Verificar que el usuario existe y está activo
         const user = await userModel.findById(decoded._id).select('-password');
-        
+
         if (!user) {
             return res.status(401).json({
                 message: "Usuario no encontrado",
