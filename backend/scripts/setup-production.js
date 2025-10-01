@@ -57,12 +57,27 @@ async function createDefaultAdmin() {
 
   try {
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@mitienda.com';
-    const adminPassword = process.env.ADMIN_PASSWORD || 'Admin123!';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+
+    console.log('🔑 Credenciales de administrador:', { email: adminEmail, password: adminPassword });
 
     // Verificar si ya existe un admin
     const existingAdmin = await userModel.findOne({ role: 'admin' });
     if (existingAdmin) {
-      console.log('ℹ️  Usuario administrador ya existe');
+      console.log('ℹ️  Usuario administrador ya existe, actualizando contraseña...');
+      // Actualizar la contraseña del admin existente
+      const hashedPassword = await bcrypt.hash(adminPassword, 12);
+      await userModel.updateOne(
+        { role: 'admin' },
+        {
+          password: hashedPassword,
+          email: adminEmail,
+          name: 'Administrador',
+          isActive: true,
+          emailVerified: true
+        }
+      );
+      console.log('✅ Usuario administrador actualizado con nuevas credenciales');
       return;
     }
 
