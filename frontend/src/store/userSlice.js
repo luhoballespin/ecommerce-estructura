@@ -11,7 +11,6 @@ export const loginUser = createAsyncThunk(
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify(loginData),
       });
 
@@ -56,7 +55,6 @@ export const logoutUser = createAsyncThunk(
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
         });
 
         if (response.ok) {
@@ -109,7 +107,6 @@ export const checkAuthStatus = createAsyncThunk(
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
       });
 
       if (!response.ok) {

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  FaUser, 
-  FaEnvelope, 
-  FaLock, 
-  FaEye, 
-  FaEyeSlash, 
-  FaPhone, 
+import {
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaPhone,
   FaMapMarkerAlt,
   FaCheck,
   FaTimes,
@@ -61,7 +61,7 @@ const ModernSignUp = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       setFormData(prev => ({
@@ -131,7 +131,7 @@ const ModernSignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast.error('Por favor corrige los errores en el formulario');
       return;
@@ -145,7 +145,6 @@ const ModernSignUp = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -238,11 +237,10 @@ const ModernSignUp = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                    validationErrors.name 
-                      ? 'border-red-300 focus:ring-red-500' 
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${validationErrors.name
+                      ? 'border-red-300 focus:ring-red-500'
                       : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                    }`}
                   placeholder="Tu nombre completo"
                 />
                 {formData.name && !validationErrors.name && (
@@ -274,11 +272,10 @@ const ModernSignUp = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                    validationErrors.email 
-                      ? 'border-red-300 focus:ring-red-500' 
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${validationErrors.email
+                      ? 'border-red-300 focus:ring-red-500'
                       : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                    }`}
                   placeholder="tu@email.com"
                 />
                 {formData.email && !validationErrors.email && (
@@ -310,11 +307,10 @@ const ModernSignUp = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                    validationErrors.phone 
-                      ? 'border-red-300 focus:ring-red-500' 
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${validationErrors.phone
+                      ? 'border-red-300 focus:ring-red-500'
                       : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                    }`}
                   placeholder="+52 55 1234 5678"
                 />
               </div>
@@ -341,11 +337,10 @@ const ModernSignUp = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                    validationErrors.password 
-                      ? 'border-red-300 focus:ring-red-500' 
+                  className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${validationErrors.password
+                      ? 'border-red-300 focus:ring-red-500'
                       : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                    }`}
                   placeholder="Mínimo 6 caracteres"
                 />
                 <button
@@ -360,13 +355,13 @@ const ModernSignUp = () => {
                   )}
                 </button>
               </div>
-              
+
               {/* Indicador de fortaleza de contraseña */}
               {formData.password && (
                 <div className="mt-2">
                   <div className="flex items-center space-x-2">
                     <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className={`h-2 rounded-full transition-all duration-300 ${getStrengthColor(passwordStrength(formData.password))}`}
                         style={{ width: `${(passwordStrength(formData.password) / 5) * 100}%` }}
                       />
@@ -377,7 +372,7 @@ const ModernSignUp = () => {
                   </div>
                 </div>
               )}
-              
+
               {validationErrors.password && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <FaTimes className="h-4 w-4 mr-1" />
@@ -401,11 +396,10 @@ const ModernSignUp = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
-                    validationErrors.confirmPassword 
-                      ? 'border-red-300 focus:ring-red-500' 
+                  className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${validationErrors.confirmPassword
+                      ? 'border-red-300 focus:ring-red-500'
                       : 'border-gray-300 focus:border-blue-500'
-                  }`}
+                    }`}
                   placeholder="Repite tu contraseña"
                 />
                 <button
@@ -434,7 +428,7 @@ const ModernSignUp = () => {
                 <FaMapMarkerAlt className="h-5 w-5 mr-2 text-blue-600" />
                 Dirección (Opcional)
               </h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-2">
@@ -450,7 +444,7 @@ const ModernSignUp = () => {
                     placeholder="Calle y número"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
                     Ciudad
@@ -465,7 +459,7 @@ const ModernSignUp = () => {
                     placeholder="Ciudad"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
                     Estado
@@ -480,7 +474,7 @@ const ModernSignUp = () => {
                     placeholder="Estado"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
                     Código Postal
