@@ -16,16 +16,6 @@
       "destination": "/index.html"
     }
   ],
-  "env": {
-    "REACT_APP_API_URL": "@react_app_api_url",
-    "REACT_APP_CLOUD_NAME_CLOUDINARY": "@react_app_cloud_name_cloudinary"
-  },
-  "build": {
-    "env": {
-      "REACT_APP_API_URL": "@react_app_api_url",
-      "REACT_APP_CLOUD_NAME_CLOUDINARY": "@react_app_cloud_name_cloudinary"
-    }
-  },
   "headers": [
     {
       "source": "/static/(.*)",
