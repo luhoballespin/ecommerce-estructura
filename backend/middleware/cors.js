@@ -50,12 +50,15 @@ const productionCorsOptions = {
     const allowedOrigins = [
       process.env.FRONTEND_URL,
       process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
-      process.env.PRODUCTION_DOMAIN
+      process.env.PRODUCTION_DOMAIN,
+      'https://ecommerce-estructura.vercel.app',
+      'https://ecommerce-estructura-k435oz1f0-luhoballespins-projects.verce1.app'
     ].filter(Boolean);
 
-    // En producción, ser más estricto con origins
+    // En producción, permitir requests sin origin para algunas operaciones
     if (!origin) {
-      return callback(new Error('Origin requerido en producción'), false);
+      console.log('Request sin origin - permitiendo para operaciones básicas');
+      return callback(null, true);
     }
 
     if (allowedOrigins.indexOf(origin) !== -1) {
