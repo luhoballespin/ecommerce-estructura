@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const userModel = require('../models/userModel');
 const productModel = require('../models/productModel');
+const addToCartModel = require('../models/cartProduct');
 require('dotenv').config();
 
 /**
@@ -143,6 +144,96 @@ async function verifySecurityConfig() {
 }
 
 /**
+ * Corregir IDs de productos inválidos
+ */
+async function fixProductIds() {
+  console.log('🔧 Corrigiendo IDs de productos...');
+
+  try {
+    // Datos de productos corregidos
+    const correctedProducts = [
+      {
+        productName: "Samsung Galaxy S24 Ultra",
+        brandName: "Samsung",
+        category: "electronics",
+        subcategory: "smartphones",
+        productImage: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500"],
+        description: "Smartphone premium con S Pen y cámara de 200MP para fotografía profesional.",
+        price: 119999,
+        sellingPrice: 109999,
+        stock: 50,
+        sku: "SAMS24U001",
+        tags: ["smartphone", "samsung", "premium"],
+        isActive: true
+      },
+      {
+        productName: "AirPods Pro 2da Gen",
+        brandName: "Apple",
+        category: "electronics",
+        subcategory: "audio",
+        productImage: ["https://images.unsplash.com/photo-1606220588913-b3aacb4d4f46?w=500"],
+        description: "Auriculares inalámbricos con cancelación activa de ruido y audio espacial.",
+        price: 27999,
+        sellingPrice: 24999,
+        stock: 30,
+        sku: "APPLEAP001",
+        tags: ["airpods", "apple", "inalambrico"],
+        isActive: true
+      },
+      {
+        productName: "iPhone 15 Pro Max",
+        brandName: "Apple",
+        category: "electronics",
+        subcategory: "smartphones",
+        productImage: ["https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500"],
+        description: "El smartphone más avanzado con cámara profesional y rendimiento excepcional.",
+        price: 149999,
+        sellingPrice: 129999,
+        stock: 25,
+        sku: "APPLEIP001",
+        tags: ["iphone", "apple", "premium"],
+        isActive: true
+      },
+      {
+        productName: "MacBook Air M2",
+        brandName: "Apple",
+        category: "electronics",
+        subcategory: "laptops",
+        productImage: ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500"],
+        description: "Laptop ultradelgada con chip M2 para máximo rendimiento y duración de batería.",
+        price: 99999,
+        sellingPrice: 89999,
+        stock: 20,
+        sku: "APPLEMBA001",
+        tags: ["macbook", "apple", "laptop"],
+        isActive: true
+      }
+    ];
+
+    // 1. Limpiar productos existentes con IDs inválidos
+    console.log('🗑️ Eliminando productos con IDs inválidos...');
+    await productModel.deleteMany({});
+    console.log('✅ Productos eliminados');
+
+    // 2. Limpiar carritos existentes
+    console.log('🗑️ Limpiando carritos existentes...');
+    await addToCartModel.deleteMany({});
+    console.log('✅ Carritos limpiados');
+
+    // 3. Crear productos nuevos con IDs válidos
+    console.log('➕ Creando productos nuevos...');
+    const createdProducts = await productModel.insertMany(correctedProducts);
+    console.log(`✅ ${createdProducts.length} productos creados con IDs válidos`);
+
+    console.log('🎉 Corrección de productos completada');
+
+  } catch (error) {
+    console.error('❌ Error corrigiendo productos:', error);
+    throw error;
+  }
+}
+
+/**
  * Función principal de configuración
  */
 async function setupProduction() {
@@ -158,6 +249,7 @@ async function setupProduction() {
     await setupDatabaseIndexes();
     await createDefaultAdmin();
     await setupDefaultCategories();
+    await fixProductIds();
 
     console.log('🎉 Configuración de producción completada exitosamente');
 
