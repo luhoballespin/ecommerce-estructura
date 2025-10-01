@@ -22,15 +22,25 @@ async function setupDatabaseIndexes() {
     await userModel.collection.createIndex({ role: 1 });
     await userModel.collection.createIndex({ createdAt: -1 });
 
-    // Índices para productos
+    // Índices para productos (manejar conflictos)
     await productModel.collection.createIndex({ category: 1 });
     await productModel.collection.createIndex({ subcategory: 1 });
     await productModel.collection.createIndex({ price: 1 });
     await productModel.collection.createIndex({ sellingPrice: 1 });
-    await productModel.collection.createIndex({ productName: 'text', description: 'text' });
     await productModel.collection.createIndex({ isActive: 1 });
     await productModel.collection.createIndex({ createdAt: -1 });
     await productModel.collection.createIndex({ brandName: 1 });
+
+    // Índice de texto (manejar conflictos)
+    try {
+      await productModel.collection.createIndex({ productName: 'text', description: 'text', tags: 'text' });
+    } catch (indexError) {
+      if (indexError.code === 85) { // IndexOptionsConflict
+        console.log('ℹ️  Índice de texto ya existe con diferentes opciones - omitiendo');
+      } else {
+        throw indexError;
+      }
+    }
 
     console.log('✅ Índices configurados correctamente');
   } catch (error) {
@@ -252,7 +262,14 @@ async function setupProduction() {
 
     // Ejecutar configuraciones
     await verifySecurityConfig();
-    await setupDatabaseIndexes();
+
+    // Configurar índices (continuar aunque haya errores)
+    try {
+      await setupDatabaseIndexes();
+    } catch (indexError) {
+      console.log('⚠️  Error en índices, pero continuando...');
+    }
+
     await createDefaultAdmin();
     await setupDefaultCategories();
     await fixProductIds();
