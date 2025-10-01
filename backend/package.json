@@ -23,6 +23,7 @@
     "generate-all": "npm run generate-users-clean && npm run generate-products-clean && npm run generate-orders-clean",
     "setup": "npm run migrate && npm run optimize-db-with-samples && npm run generate-all",
     "setup-production": "node scripts/setup-production.js",
+    "fix-products": "node scripts/fix-product-ids.js",
     "postinstall": "if [ \"$NODE_ENV\" == \"production\" ]; then npm run setup-production; fi"
   },
   "author": "",
