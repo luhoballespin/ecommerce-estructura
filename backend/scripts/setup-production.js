@@ -225,6 +225,12 @@ async function fixProductIds() {
     const createdProducts = await productModel.insertMany(correctedProducts);
     console.log(`✅ ${createdProducts.length} productos creados con IDs válidos`);
 
+    // Mostrar los IDs de los productos creados
+    console.log('\n📋 Productos creados con IDs válidos:');
+    createdProducts.forEach(product => {
+      console.log(`- ${product.productName} (ID: ${product._id})`);
+    });
+
     console.log('🎉 Corrección de productos completada');
 
   } catch (error) {

@@ -24,7 +24,8 @@
     "setup": "npm run migrate && npm run optimize-db-with-samples && npm run generate-all",
     "setup-production": "node scripts/setup-production.js",
     "fix-products": "node scripts/fix-product-ids.js",
-    "postinstall": "if [ \"$NODE_ENV\" == \"production\" ]; then npm run setup-production; fi"
+    "postinstall": "if [ \"$NODE_ENV\" == \"production\" ]; then npm run setup-production; fi",
+    "start": "npm run setup-production && node index.js"
   },
   "author": "",
   "license": "ISC",
